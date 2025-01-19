@@ -27,6 +27,8 @@ function updateFiles(origDir, directDir) {
             for (let fileName of filesNames) {
                 copy(fileName, origDir, directDir);
             }
+
+            deleteUnwantedFiles(filesNames, directDir);
         }
     })
 }
@@ -37,6 +39,23 @@ function copy(fileName, origDir, directDir) {
 
     fs.copyFile(originalFilePath, copiedFilePath, (err) => {
         if (err) console.log(err);
+    })
+}
+
+function deleteUnwantedFiles(origFiles, directDir) {
+    fs.readdir(directDir, (err, directFiles) => {
+        if (err) {
+            console.log(err);
+        } else {
+            const filesToDelete = directFiles.filter((file) => !origFiles.includes(file));
+
+            if (filesToDelete.length > 0) {
+                for (file of filesToDelete) {
+                    const filePath = path.join(directDir, file);
+                    fsPromises.rm(filePath);
+                }
+            }
+        }
     })
 }
 
